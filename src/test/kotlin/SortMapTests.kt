@@ -1,24 +1,44 @@
 import org.junit.Assert.assertEquals
-import kotlin.collections.mapOf
-import kotlin.collections.toSortedMap
+import kotlin.collections.*
 import org.junit.Test as test
 
 class SortMapTests {
 
-    val original = mapOf("a" to 4, "c" to 6, "b" to 2)
+    val original = mapOf("a" to 4, "c" to 6, "b" to 2, "d" to 0)
 
-    @test fun toSortMap() {
-        val expected = mapOf("a" to 4, "b" to 2, "c" to 6 )
-        assertEquals(expected, original.toSortedMap())
+    fun assertOrder( expected: Map<String, Int>, actual: Map<String, Int>) {
+        val expectedKeys = expected.keys.toArrayList()
+        val actualKeys = actual.keys.toArrayList()
+        for(i in expectedKeys.indices) {
+            assertEquals( expectedKeys[i], actualKeys[i] )
+        }
     }
 
-    @test fun toSortMapDescending() {
-        val expected = mapOf("c" to 6, "b" to 2, "a" to 4)
-        assertEquals(expected, original.toSortedMap(compareByDescending { it }))
+    @test fun toSortedMap() {
+        val expected = mapOf("a" to 4, "b" to 2, "c" to 6, "d" to 0 )
+        val actual = original.toSortedMap()
+        assertOrder( expected, actual )
     }
 
-    @test fun toSortMap_comparator() {
+    @test fun toSortedMapDescending() {
+        val expected = mapOf("d" to 0, "c" to 6, "b" to 2, "a" to 4)
+        val actual = original.toSortedMap(compareByDescending { it })
+        assertOrder(expected, actual)
+    }
+
+    /**
+     * Question: Why does this implementation require a cast to Int in order to compare?
+     */
+    @test fun toSortedMap_comparator() {
+        val expected = mapOf("c" to 6, "a" to 4, "b" to 2, "d" to 0)
+        val actual = original.toSortedMap(comparator { x, y -> (original[x] as Int).compareTo((original[y] as Int)) })
+        assertOrder(expected, actual)
+    }
+
+    @test fun filter_thenSortByValue() {
         val expected = mapOf("c" to 6, "a" to 4, "b" to 2)
-        assertEquals(expected, original.toSortedMap(comparator { x, y -> (original[x] as Int).compareTo((original[y] as Int)) }))
+        val actual = original.filter { it.value > 0 }
+                             .toSortedMap(comparator { x, y -> (original[x] as Int).compareTo((original[y] as Int)) })
+        assertOrder(expected, actual)
     }
 }
