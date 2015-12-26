@@ -1,6 +1,6 @@
 import org.junit.Assert.assertEquals
 import kotlin.collections.*
-import org.junit.Test as test
+import org.junit.Test
 
 class SortMapTests {
 
@@ -14,13 +14,13 @@ class SortMapTests {
         }
     }
 
-    @test fun toSortedMap() {
+    @Test fun toSortedMap() {
         val expected = mapOf("a" to 4, "b" to 2, "c" to 6, "d" to 0 )
         val actual = original.toSortedMap()
         assertOrder( expected, actual )
     }
 
-    @test fun toSortedMapDescending() {
+    @Test fun toSortedMapDescending() {
         val expected = mapOf("d" to 0, "c" to 6, "b" to 2, "a" to 4)
         val actual = original.toSortedMap(compareByDescending { it })
         assertOrder(expected, actual)
@@ -29,16 +29,16 @@ class SortMapTests {
     /**
      * Question: Why does this implementation require a cast to Int in order to compare?
      */
-    @test fun toSortedMap_comparator() {
+    @Test fun toSortedMap_comparator() {
         val expected = mapOf("c" to 6, "a" to 4, "b" to 2, "d" to 0)
-        val actual = original.toSortedMap(comparator { x, y -> (original[x] as Int).compareTo((original[y] as Int)) })
+        val actual = original.toSortedMap(comparator { x, y -> (original[y] as Int).compareTo((original[x] as Int)) })
         assertOrder(expected, actual)
     }
 
-    @test fun filter_thenSortByValue() {
+    @Test fun filter_thenSortByValue() {
         val expected = mapOf("c" to 6, "a" to 4, "b" to 2)
         val actual = original.filter { it.value > 0 }
-                             .toSortedMap(comparator { x, y -> (original[x] as Int).compareTo((original[y] as Int)) })
+                             .toSortedMap(comparator { x, y -> (original[y] as Int).compareTo((original[x] as Int)) })
         assertOrder(expected, actual)
     }
 }
